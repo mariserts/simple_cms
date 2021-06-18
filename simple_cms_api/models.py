@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from .conf import settings
 from .managers import UserManager
 
 
@@ -65,12 +66,12 @@ class Thing(
     tenant = models.ForeignKey(
         'Tenant',
         on_delete=models.CASCADE,
-        related_name='things'
+        related_name=settings.RELATED_NAME_THING_TENANT
     )
     thing_type = models.ForeignKey(
         'ThingType',
         on_delete=models.CASCADE,
-        related_name='things'
+        related_name=settings.RELATED_NAME_THING_THING_TYPE
     )
 
     data = models.JSONField(default=dict, blank=True)
@@ -90,7 +91,7 @@ class Translatable(
     thing = models.ForeignKey(
         Thing,
         on_delete=models.CASCADE,
-        related_name='translatables'
+        related_name=settings.RELATED_NAME_TRANSLATABLE_THING
     )
 
     data = models.JSONField(default=dict, blank=True)
@@ -107,7 +108,7 @@ class ThingVector(
     thing = models.ForeignKey(
         Thing,
         on_delete=models.CASCADE,
-        related_name='vectors'
+        related_name=settings.RELATED_NAME_THINGVECTOR_THING
     )
 
     field_name = models.CharField(max_length=255, db_index=True)
@@ -124,12 +125,12 @@ class TranslatableVector(
     thing = models.ForeignKey(
         Thing,
         on_delete=models.CASCADE,
-        related_name='translatable_vectors'
+        related_name=settings.RELATED_NAME_TRANSLATABLEVECTOR_THING
     )
     translatable = models.ForeignKey(
         Translatable,
         on_delete=models.CASCADE,
-        related_name='vectors'
+        related_name=settings.RELATED_NAME_TRANSLATABLEVECTOR_TRANSLATABLE
     )
 
     field_name = models.CharField(max_length=255, db_index=True)
@@ -147,10 +148,10 @@ class Tenant(
 
     parent = models.ForeignKey(
         'Tenant',
-        related_name='sub_tenants',
         blank=True,
         null=True,
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
+        related_name=settings.RELATED_NAME_TENANT_PARENT,
     )
 
     described_by = models.ForeignKey(
@@ -158,7 +159,7 @@ class Tenant(
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        related_name='tenant_description'
+        related_name=settings.RELATED_NAME_TENANT_DESCRIBED_BY
     )
     system_name = models.CharField(max_length=255)
     has_subtenant_content = models.BooleanField(default=False)
@@ -197,15 +198,42 @@ class TenantUser(
         models.Model):
 
     class Meta:
-        unique_together = ('tenant', 'user')
+        unique_together = (
+            'tenant',
+            'user'
+        )
 
     tenant = models.ForeignKey(
         Tenant,
         on_delete=models.CASCADE,
-        related_name='users'
+        related_name=settings.RELATED_NAME_TENANTUSER_TENANT
     )
     user = models.ForeignKey(
         dj_settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='tenants'
+        related_name=settings.RELATED_NAME_TENANTUSER_USER
     )
+
+
+class Site(
+        DateTimeStampedFieldMixin,
+        UuidStampedFieldMixin,
+        models.Model):
+
+    tenant = models.ForeignKey(
+        Tenant,
+        on_delete=models.CASCADE,
+        related_name=settings.RELATED_NAME_SITE_TENANT
+    )
+
+    domain = models.CharField(max_length=255, unique=True, db_index=True)
+
+    is_active = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        self.domain = self.clean_domain(self.domain)
+        super().save(*args, **kwargs)
+
+    @staticmethod
+    def clean_domain(domain):
+        return domain

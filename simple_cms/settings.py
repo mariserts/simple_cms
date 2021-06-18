@@ -59,6 +59,7 @@ INSTALLED_APPS = [
 
     #
     'simple_cms_frontend',
+    'simple_cms_frontend_assets',
     'simple_cms_frontend_homepage',
 ]
 
