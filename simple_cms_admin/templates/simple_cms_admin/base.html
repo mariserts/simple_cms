@@ -1,0 +1,31 @@
+{% load static %}
+{% load simple_cms_admin_tags %}
+
+<!DOCTYPE html>
+<html lang="XXXX">
+    <head>
+        <meta charset="utf-8" />
+        <title>XXXX</title>
+        <meta name="description" content="XXXX" />
+        <meta http-equiv="X-UA-Compatible" content="IE=11">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {% block extra_meta %}{% endblock %}
+        <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{% static 'simple_cms_admin/bootstrap_3_4_1/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'simple_cms_admin/app/css/styles.css' %}">
+        <!--[if lt IE 9]>
+        <script src="{% static 'simple_cms_admin/bootstrap_3_4_1/html5shiv.min.js' %}"></script>
+        <script src="{% static 'simple_cms_admin/bootstrap_3_4_1/respond.min.js' %}"></script>
+        <![endif]-->
+        {% block extra_css %}{% endblock %}
+    </head>
+    <body>
+        {% main_menu %}
+        {% block content %}{% endblock %}
+        {% footer %}
+        <script src="{% static 'simple_cms_admin/jquery_1_12_4/jquery-1.12.4.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'simple_cms_admin/bootstrap_3_4_1/js/bootstrap.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'simple_cms_admin/app/js/app.js' %}"></script>
+        {% block extra_js %}{% endblock %}
+    </body>
+</html>

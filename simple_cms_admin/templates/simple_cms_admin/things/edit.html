@@ -1,0 +1,60 @@
+{% extends 'simple_cms_admin/base.html' %}
+
+{% load i18n %}
+
+
+{% block content %}
+
+    <div class="container margin-bottom-lg">
+        <div class="page-header">
+            <h1>
+                <small class="pull-right">{{ instance.admin_display.codename }}</small>
+                {{ instance.admin_display.title }}
+            </h1>
+        </div>
+    </div>
+
+    <div class="container margin-bottom-lg">
+        <form action="#" method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+
+                {% if field.is_hidden is True %}
+                    {{ field }}
+                {% elif field.field.widget.is_custom is True %}
+                    {% include field.field.widget.template_name with field=field %}
+                {% else %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required|default:False is True %}<span class="red-text bold">*</span>{% endif %}
+                        </label>
+
+                        {{ field.errors }}
+
+                        {% if field.errors|length != 0 %}
+                            <ul class="errorlist">
+                                {% for error in field.errors %}
+                                    <li>
+                                        <span class="red-text font-14">{{ error }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+
+                        {{ field }}
+
+                        {% if field.help_text|default:None is not None %}
+                            <p class="help-block">{{ field.help_text|safe }}</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <hr />
+
+            <button class="btn btn-default btn-lg">Submit</button>
+        </form>
+    </div>
+
+{% endblock %}

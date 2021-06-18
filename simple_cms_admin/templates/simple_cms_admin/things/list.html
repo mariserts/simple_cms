@@ -1,0 +1,134 @@
+{% extends 'simple_cms_admin/base.html' %}
+
+{% load i18n %}
+
+
+{% block content %}
+
+    <h2 class="sr-only">
+        {% translate 'Result refinement' %}
+    </h2>
+
+    <form action="{{ request.path }}" method="GET">
+        <div class="container margin-bottom-md">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label>{% translate 'Text search' %}</label>
+                        <input type="text" class="form-control input-lg" name="q" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                    <div class="form-group">
+                        <label>{% translate 'Tenant' %}</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control input-lg" placeholder="0 selected" disabled>
+                                <span class="input-group-btn">
+                                <a class="btn btn-default btn-lg" type="button">
+                                    <span class="glyphicon glyphicon-menu-down"></span>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                    <label>{% translate 'Type' %}</label>
+                    <div class="input-group">
+                        <input type="text" name="type" class="form-control input-lg" placeholder="0 selected" disabled>
+                            <span class="input-group-btn">
+                            <a class="btn btn-default btn-lg" type="button">
+                                <span class="glyphicon glyphicon-menu-down"></span>
+                            </a>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                    <div class="form-group">
+                        <label>{% translate 'Other?' %}</label>
+                        <div class="input-group">
+                            <input type="text" name="" class="form-control input-lg" placeholder="0 selected" disabled>
+                                <span class="input-group-btn">
+                                <a class="btn btn-default btn-lg" type="button">
+                                    <span class="glyphicon glyphicon-menu-down"></span>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="hidden-lg hidden-md hidden-sm col-xs-12">
+                    <div class="form-group">
+                        <a href="{{ request.path }}">{% translate 'Clear filters' %}</a>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                    <div class="form-group">
+                        <button class="btn btn-default">{% translate 'Refine' %}</button>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 hidden-xs text-right">
+                    <div class="form-group">
+                        <a href="{{ request.path }}">{% translate 'Clear filters' %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <h2 class="sr-only">
+        {% translate 'Results' %}
+    </h2>
+
+    <div class="container margin-bottom-lg">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <strong>
+                    {{ count|default:0 }} {% translate 'results found' %}
+                </strong>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="sr-only">
+        {% translate 'Results list' %}
+    </h2>
+
+    <div class="container margin-bottom-md">
+        <div class="row simple-cms-admin-results-list">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <ul class="list-group">
+                    {% for thing in results|default:'' %}
+                        <li class="list-group-item">
+                            <span class="badge">{{ thing.admin_display.codename }}</span>
+                            <a href="{{ thing.admin_display.url }}">{{ thing.admin_display.title }}</a>
+                            <p class="help-block"><small>
+                                {% if thing.is_published is True %}{% translate 'Published' %};{% endif %}
+                                {% if thing.is_published is False %}{% translate 'Unpublished' %};{% endif %}
+                                Created at: {{ thing.admin_display.created_at|date }};
+                                {{ thing.admin_display.tenant }};
+                            </small></p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="sr-only">
+        {% translate 'Pagination' %}
+    </h2>
+
+    <div class="container margin-bottom-lg">
+        <nav aria-label="...">
+            <ul class="pager">
+                <li><a href="#">Previous</a></li>
+                <li>{{ page }} / {{ pages }}</li>
+                <li><a href="#">Next</a></li>
+            </ul>
+        </nav>
+    </div>
+
+{% endblock %}
